@@ -1,7 +1,7 @@
 Poker
 =====
 
-A python poker engine with the modules:
+A python poker engine with three modules:
 
 Cards v.x is the game engine and deck/player generator
 
