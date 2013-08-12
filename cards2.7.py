@@ -4,7 +4,8 @@ from operator import attrgetter
 import time
 import pokerstrat
 
-#test edit
+#test edit 2345
+
 
 
 #card class
