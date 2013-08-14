@@ -2,7 +2,8 @@ import random
 import pokerhands
 from operator import attrgetter
 import time
-import pokerstrat
+
+
 
 #test edit 2345
 
