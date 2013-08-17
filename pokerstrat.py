@@ -34,7 +34,7 @@ class Random(Strategy):
                 stake=0
                 if player.all_in or player.stack<=0:
 
-                        stake=-2
+                        player.stake=-2
 
                 else:
 
@@ -65,7 +65,7 @@ class Random(Strategy):
 
                         
 
-                return stake
+                return
 		
 class Human(Strategy):
     
@@ -87,7 +87,7 @@ class Human(Strategy):
         else: op=2
 
         if player.all_in or player.stack<=0:
-                stake=-2
+                player.stake=0
 
         else:
 
@@ -100,11 +100,11 @@ class Human(Strategy):
 
     
         if action=='x':
-                stake=0
+                player.check_call(pot)
         elif action=='f':
-                stake=-1
+                player.fold(pot)
         elif action=='c':
-                stake=player.to_play
+                player.check_call(pot)
         elif action=='b' or action=='r':
                 stake=0
                 while stake not in range (1,(player.stack+1)):
@@ -112,8 +112,8 @@ class Human(Strategy):
                                 stake=int(input('stake..'))
                         except:
                                 print ('input a stake')
-                        
-        return stake
+                                
+                player.bet(pot, stake)
 
         
                                 
