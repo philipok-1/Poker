@@ -191,14 +191,15 @@ class Hand:
               
         next_player(pot, True)
         if pot.already_bet:
-            print (str(self.name)+' raises '+str(stake))
+            print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
         else:
             print (str(self.name)+' bets '+str(stake))
         
             pot.already_bet=True
       
-        self.stake=stake     
+        self.stake=stake
+        pots[-1].to_play+=(self.stake-self.to_play)
         
     def ante(self, pot):
         
