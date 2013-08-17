@@ -168,7 +168,37 @@ class Hand:
         	
             pot.stage=5
 
-            
+    def no_play(self, pot):
+    	
+    	next_player(pot)
+
+    	self.stake=0
+    	
+   	
+    def check_call(self, pot):
+    	
+        next_player(pot)
+        
+        if self.to_play==0:
+            print (str(self.name)+' checks')
+        else:
+            print (str(player.name)+' calls '+str(self.to_play))
+
+        self.stake=self.to_play
+    
+    
+    def bet(self, pot, stake):
+              
+        next_player(pot, True)
+        if pot.already_bet:
+            print (str(self.name)+' raises '+str(stake))
+            self.raised+=1
+        else:
+            print (str(self.name)+' bets '+str(stake))
+        
+            pot.already_bet=True
+      
+        self.stake=stake     
         
     def ante(self, pot):
         
@@ -509,7 +539,7 @@ def betting_round(pot, table):
                 print (str(player.name)+' to play'+ str(player.to_play)+'\n')
 
                 for strategy in player.strategy:
-                        player.stake=strategy.decide_play(player, pots)
+                        strategy.decide_play(player, pots[-1])
 
             
 #_________________________________________________________________________________________________
@@ -518,60 +548,20 @@ def betting_round(pot, table):
 
         if pots[-1].is_frozen:
 
-            next_player(pot)
+            player.no_play(pot)
+            player.stake=0
 
         elif player.is_folded:
 
             next_player(pot)
+            player.stake=0
         
-        elif player.stake==-1:
-        	  player.fold(pot)
+        elif player.all_in:
+        	  
         	  next_player(pot)
         	  player.stake=0
         
-        elif player.stake==-2:
-        		player.stake=0
-        		next_player(pot)
-        		print (str(player.name)+' is all in - no more play')
-            
         
-        elif player.stake==player.to_play:
-            
-            if player.to_play==0:
-                
-                print (str(player.name)+' checks')
-        
-            else:
-                
-                print (str(player.name)+' calls '+str(player.stake))
-
-            next_player(pot)
-
-        elif player.stake<player.to_play and player.stake==player.stack:
-
-            print (str(player.name)+' calls all in'+str(player.stake))
-
-            next_player(pot)
-        
-        #raise   
-        elif player.stake>player.to_play:
-                
-            rep=''
-            if player.stack-player.stake==0:
-                rep=' all in'
-                
-            next_player(pot, True)
-            
-            if pots[-1].already_bet:
-                print (str(player.name)+' raises '+str(player.stake-player.to_play)+str(rep))
-                
-                
-            else:
-                print (str(player.name)+' bets '+str(player.stake)+str(rep))
-                
-                pots[-1].already_bet=True
-
-            pots[-1].to_play+=(player.stake-player.to_play)
 
         #____________________________________            
 
@@ -767,9 +757,9 @@ BLINDS=(10,20)
 table=Table()
 
 player1=Hand('Philip', table, 'Human')
-player2=Hand('Igor', table)
-player3=Hand('Carol', table)
-player4=Hand('Johnboy', table)
+player2=Hand('Igor', table, 'Human')
+player3=Hand('Carol', table, 'Human')
+player4=Hand('Johnboy', table, 'Human')
 
 deck=Deck()
 
