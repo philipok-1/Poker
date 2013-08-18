@@ -2,7 +2,12 @@
 
 import random, pokerhands
 
-
+def evaluate(player):
+	
+	value=player.get_value()
+	
+	
+	
 
 class Strategy():
         
@@ -26,46 +31,36 @@ class Strategy():
 
 class Random(Strategy):
 
-        
-       
-        
+    
         def decide_play(self, player, pot):
 
                 stake=0
-                if player.all_in or player.stack<=0:
-
-                        player.stake=-2
-
-                else:
-
-                        choice=random.randint(0,50)
-
-                        if choice>12 or player.raised==1:
-                                stake=player.to_play
-                                if player.stack<player.to_play:
-                                        fold_choice=random.randint(0,5)
-                                        if fold_choice<3:
-                                                stake=-1
-                                        else:
-                                                stake=player.stack
                 
-                        elif choice==0:
-                                stake=-1
-
-                        else:
-
-                                if choice==1:
-                                        stake=player.stack
-                                        player.raised+=1
-                                else:
-                                        stake=player.to_play+random.randrange(10,100,20)
-                                        if stake>player.stack:
-                                                stake=player.stack
-                                        player.raised+=1
-
-                        
-
-                return
+                choice=random.randint(0,4)
+                max=player.stack-player.to_play
+                if max<10:
+                	max=player.stack
+                bet_amount=random.randrange(10,max+1)
+                print (bet_amount)
+                
+                if choice==0:
+                	player.fold(pot)
+                elif choice==1:
+                	player.check_call(pot)
+                elif choice==2:
+                	if player.stack<=player.to_play:
+                		player.check_call(pot)
+                	else:
+                		player.bet(pot, bet_amount)
+                elif choice==3:
+                	if player.stack<=player.to_play:
+                		player.check_call(pot)
+                	else:
+                		player.bet(pot, max)
+                	
+                
+                
+                
 		
 class Human(Strategy):
     
@@ -82,12 +77,14 @@ class Human(Strategy):
 
         if player.to_play==0:
                 op=0
-        elif player.to_play<=player.stack:
+        elif player.to_play<player.stack:
                 op=1
         else: op=2
 
         if player.all_in or player.stack<=0:
                 player.stake=0
+                print ('all in test')
+                
 
         else:
 
@@ -107,7 +104,9 @@ class Human(Strategy):
                 player.check_call(pot)
         elif action=='b' or action=='r':
                 stake=0
-                while stake not in range (1,(player.stack+1)):
+                max=player.stack-player.to_play
+                print ('max '+str(max))
+                while stake not in range (10,(max+1)):
                         try:
                                 stake=int(input('stake..'))
                         except:
@@ -131,3 +130,4 @@ class Human(Strategy):
 	
 	
 	
+
