@@ -168,7 +168,44 @@ class Hand:
         	
             pot.stage=5
 
-            
+    def no_play(self, pot):
+    	
+    	next_player(pot)
+
+    	self.stake=0
+    	
+   	
+    def check_call(self, pot):
+    	
+        
+        
+        if self.to_play==0:
+            print (str(self.name)+' checks')
+        else:
+        		if self.to_play>self.stack:
+        			self.stake=self.stack
+        		else:
+        			self.stake=self.to_play
+        print (str(self.name)+' calls '+str(self.to_play))
+
+        next_player(pot)
+    
+    
+    def bet(self, pot, stake):
+              
+        
+        if pot.already_bet:
+            print (str(self.name)+' raises '+str(stake))
+            self.raised+=1
+        else:
+            print (str(self.name)+' bets '+str(stake))
+        
+            pot.already_bet=True
+      
+        self.stake=stake+self.to_play
+        pots[-1].to_play+=(self.stake-self.to_play)
+        
+        next_player(pot, True)
         
     def ante(self, pot):
         
@@ -183,9 +220,6 @@ class Hand:
             pot.to_play=BLINDS[1]
             self.in_pot+=BLINDS[1]
         
-
-    
-    
                     
     def bust(self):
 
@@ -328,7 +362,8 @@ class Pot(object):
     def is_frozen(self):
 
         if len(self.active_players)<=1:
-            return True
+        	self.active_players=[]
+        	return True
         else:
             return False
 
@@ -502,78 +537,16 @@ def betting_round(pot, table):
 
         #is the player folded? decide action
 
-        if player not in pots[-1].folded_players:
-
-            if pots[-1].is_frozen==False:
-
-                print (str(player.name)+' to play'+ str(player.to_play)+'\n')
+        if player in pots[-1].active_players:
+        	
+        	print (str(player.name)+' to play'+ str(player.to_play)+'\n')
 
                 for strategy in player.strategy:
-                        player.stake=strategy.decide_play(player, pots)
-
-            
-#_________________________________________________________________________________________________
+                        strategy.decide_play(player, pots[-1])
                         
-        #read the stake and play
-
-        if pots[-1].is_frozen:
-
-            next_player(pot)
-
-        elif player.is_folded:
-
-            next_player(pot)
-        
-        elif player.stake==-1:
-        	  player.fold(pot)
-        	  next_player(pot)
-        	  player.stake=0
-        
-        elif player.stake==-2:
-        		player.stake=0
-        		next_player(pot)
-        		print (str(player.name)+' is all in - no more play')
-            
-        
-        elif player.stake==player.to_play:
-            
-            if player.to_play==0:
-                
-                print (str(player.name)+' checks')
-        
-            else:
-                
-                print (str(player.name)+' calls '+str(player.stake))
-
-            next_player(pot)
-
-        elif player.stake<player.to_play and player.stake==player.stack:
-
-            print (str(player.name)+' calls all in'+str(player.stake))
-
-            next_player(pot)
-        
-        #raise   
-        elif player.stake>player.to_play:
-                
-            rep=''
-            if player.stack-player.stake==0:
-                rep=' all in'
-                
-            next_player(pot, True)
-            
-            if pots[-1].already_bet:
-                print (str(player.name)+' raises '+str(player.stake-player.to_play)+str(rep))
-                
-                
-            else:
-                print (str(player.name)+' bets '+str(player.stake)+str(rep))
-                
-                pots[-1].already_bet=True
-
-            pots[-1].to_play+=(player.stake-player.to_play)
-
-        #____________________________________            
+        else:
+         	player.no_play(pot)
+				         
 
 
 #adjust player totals and check for all-ins
@@ -775,7 +748,7 @@ deck=Deck()
 
 status='play'
 
-#for i in range (0,4):
+#for i in range (0,2):
 
 while status=='play':
 
@@ -798,8 +771,6 @@ while status=='play':
     pots.append(pot)
     
     #allocate blinds and ante up
-
-    
 
     pot.set_blinds()
 
@@ -859,3 +830,4 @@ for player in table.players:
 
 
    
+
