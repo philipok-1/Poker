@@ -1,4 +1,4 @@
-'''Cards 2.7.4
+'''Cards 2.8.0
 
 fixed side pot freezing error
 
@@ -161,7 +161,9 @@ class Hand:
         print (str(self.name)+' folds')
 
         pot.folded_players.append(self)
-        pot.active_players.remove(self)
+        if self in pot.active_players:
+        
+            pot.active_players.remove(self)
         
                 
         if pot.one_remaining:
@@ -192,18 +194,19 @@ class Hand:
     
     
     def bet(self, pot, stake):
-              
+        
         
         if pot.already_bet:
-            print (str(self.name)+' raises '+str(stake))
+            print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
         else:
             print (str(self.name)+' bets '+str(stake))
         
             pot.already_bet=True
       
-        self.stake=stake+self.to_play
+        self.stake=stake
         pots[-1].to_play+=(self.stake-self.to_play)
+        
         
         next_player(pot, True)
         
@@ -531,22 +534,29 @@ def betting_round(pot, table):
         player=pot.players[next_up]
         player.to_play=(pots[-1].to_play-player.in_pot)
         if player.to_play<0:
-        	player.to_play=0
+            player.to_play=0
         
         
 
         #is the player folded? decide action
 
-        if player in pots[-1].active_players:
-        	
-        	print (str(player.name)+' to play'+ str(player.to_play)+'\n')
+        if pots[-1].is_frozen==False:
+
+            if player in pots[-1].active_players:
+                  
+                print (str(player.name)+' to play'+ str(player.to_play)+'\n')
 
                 for strategy in player.strategy:
-                        strategy.decide_play(player, pots[-1])
-                        
+
+                      strategy.decide_play(player, pots[-1])
+
+            else:
+                
+                player.no_play(pot)
+            
         else:
-         	player.no_play(pot)
-				         
+            player.no_play(pot)
+                         
 
 
 #adjust player totals and check for all-ins
@@ -562,14 +572,15 @@ def betting_round(pot, table):
             is_side_pot=True
             player.all_in=True
             player.first_all_in=True
-            #pots[-1].active_players.remove(player)
+            
     
         
         
         debug(pot)
         
         
-        
+    if pots[-1].one_remaining:
+        is_side_pot=False
             
     #deal with refunds_____________________________
                 
@@ -588,7 +599,8 @@ def betting_round(pot, table):
     
         
         
-        #main pot
+    #main pot refund_____________________
+        
         print ('side pot')
         print ('high bet'+str(big_bet))
         low_bet=side_potters[-1].in_pot
@@ -605,15 +617,15 @@ def betting_round(pot, table):
             pot.total-=refund
             player.stack+=refund
             player.carry_over=refund
+
+            print ('player in side pot - '+str(player.name))
             
             if player.carry_over>0:
             	next_pot_players.append(player)
             else:
-            	pots[-1].active_players.remove(player)
-            	
-            
-            
-            
+                if player in pots[-1].active_players:
+                    pots[-1].active_players.remove(player)
+      
             
             print (str(player.name))
             print ('refund...'+str(refund))
@@ -651,6 +663,8 @@ def betting_round(pot, table):
         
         print ('pot size= '+str(pot.total))
 
+#zero the player cash in the pot
+        
         for player in pot.players:
             player.in_pot=0
             player.stake=0
@@ -666,7 +680,7 @@ def betting_round(pot, table):
     pots[0].already_bet=False
     
     
-        
+ 
 
 
 def showdown(pot):
