@@ -44,7 +44,7 @@ class Random(Strategy):
     
         def decide_play(self, player, pot):
 
-                
+                player.get_value()
                 choice=random.randint(0,4)
                
                 
@@ -74,6 +74,7 @@ class Human(Strategy):
     
     def decide_play(self, player, pot):
         
+        player.get_value()
         options=Human.options
         choices=Human.choices
         action=''
@@ -111,7 +112,7 @@ class Human(Strategy):
                 stake=0
                 max=player.stack-player.to_play
                 print ('max '+str(max))
-                while stake not in range (10,(max+1)):
+                while stake not in range (10,(max+1), 5):
                         try:
                                 stake=int(input('stake..'))
                         except:
@@ -135,4 +136,3 @@ class Human(Strategy):
 	
 	
 	
-
