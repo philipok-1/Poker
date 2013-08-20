@@ -72,6 +72,7 @@ class Hand:
         self.hand_value=0
         self.rep=''
         self.tie_break=0
+        self.flustra=0
         self.is_folded=False
         self.stack=1000
         
@@ -121,11 +122,13 @@ class Hand:
         
         self.total_cards=(self.cards+table.cards)
         
-        rep, hand_value, tie_break=pokerhands.evaluate_hand(self.total_cards)
+        rep, hand_value, tie_break, flustra=pokerhands.evaluate_hand(self.total_cards)
         
         self.rep=str(rep)
         self.hand_value=hand_value
         self.tie_break=tie_break
+        self.flustra=flustra
+        
     
         return hand_value, rep, tie_break
 
@@ -457,6 +460,7 @@ def debug(pot):
         
         print (str(player.name)+' Stack='+str(player.stack)+' Stake='+str(player.stake)+' Player in pot='+str(player.in_pot)+'  Pot total='+str(pot.total)+'  all_in='+str(player.all_in)+'first all in'+str(player.first_all_in))
         print ('is folded'+str(player.is_folded))
+        print ('flustra='+str(player.flustra))
     
     
     for pot in pots:
