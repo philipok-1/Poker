@@ -191,7 +191,9 @@ class Hand:
         			self.stake=self.stack
         		else:
         			self.stake=self.to_play
-        print (str(self.name)+' calls '+str(self.to_play))
+        		print (str(self.name)+' calls '+str(self.to_play))
+        		if pot.stage==0 and pot.raised==False:
+        			pot.limpers+=1
 
         next_player(pot)
     
@@ -202,6 +204,8 @@ class Hand:
         if pot.already_bet:
             print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
+            pot.limpers=0
+            pot.raised=True
         else:
             print (str(self.name)+' bets '+str(stake))
         
@@ -347,6 +351,7 @@ class Pot(object):
         self.players=[]
         self.folded_players=[]
         self.active_players=[]
+        self.limpers=0
         self.name=name
                     
         self.total=0
@@ -362,6 +367,7 @@ class Pot(object):
         self.no_raise=0
         #already bet - works out if the round starts with 0 bet 
         self.already_bet=False
+        self.raised=False
 
     @property
 
@@ -469,6 +475,7 @@ def debug(pot):
             	print (str(player.name))
 
             print ('table size '+str(pot.table_size))
+            print ('limpers='+str(pot.limpers))
             print ('no raise '+str(pot.no_raise))
             print ('frozen='+str(pot.is_frozen))
             print ('one remaining='+str(pot.one_remaining))
@@ -848,4 +855,3 @@ for player in table.players:
 
 
    
-
