@@ -200,7 +200,8 @@ class Hand:
     
     def bet(self, pot, stake):
         
-        
+        print ('stake='+str(stake))
+        print ('self to play='+str(self.to_play))
         if pot.already_bet:
             print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
@@ -213,6 +214,8 @@ class Hand:
       
         self.stake=stake
         pots[-1].to_play+=(self.stake-self.to_play)
+        
+        print ('self.stake='+str(self.stake))
         
         
         next_player(pot, True)
@@ -471,7 +474,8 @@ def debug(pot):
     
     for pot in pots:
             print (str(pot.name)+' total '+ str(pot.total))
-            for player in pot.players:
+            print ('active players')
+            for player in pot.active_players:
             	print (str(player.name))
 
             print ('table size '+str(pot.table_size))
@@ -584,6 +588,7 @@ def betting_round(pot, table):
             player.all_in=True
             player.first_all_in=True
             
+            
     
         
         
@@ -689,6 +694,7 @@ def betting_round(pot, table):
     pots[0].turn=0
     pots[0].stage+=1
     pots[0].already_bet=False
+    pots[0].limpers=0
     
     
  
@@ -822,12 +828,14 @@ while status=='play':
         for pot in pots:
         
             showdown(pot)
-
-    for player in table.players:
-
-        if player.stack<=BLINDS[1]:
             
-            player.bust()
+    for player in pot.players:
+    	
+    	print (str(player.name))
+    	
+    	if player.stack<=BLINDS[1]:
+    		
+    		player.bust()
 		
     if len(table.players)==1:
     	status='winner'
@@ -855,3 +863,4 @@ for player in table.players:
 
 
    
+
