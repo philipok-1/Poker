@@ -1,6 +1,6 @@
-'''Cards 2.8.0
+'''Cards 2.8.1
 
-fixed side pot freezing error
+fixed negative stakes and failure to record bust()
 
 '''
 
