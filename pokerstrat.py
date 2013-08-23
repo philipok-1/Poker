@@ -10,12 +10,20 @@ def calc_bet(player):
 
                    
         max_bet=player.stack-player.to_play
+        min_bet=player.to_play
+        if max_bet<min_bet:
+        	min_bet=max_bet
+        print ('max bet '+str(max_bet))
+        print ('min be  '+str(min_bet))
+        
+        
 
         if max_bet<0:
                 max_bet=player.stack
-
-        bet_amount=random.randrange(5,max_bet+1,5)
-
+				
+        bet_amount=random.randrange(min_bet,max_bet+1,5)
+        
+        
         return bet_amount
 	
 
@@ -45,19 +53,18 @@ class Random(Strategy):
         def decide_play(self, player, pot):
 
                 player.get_value()
-                choice=random.randint(0,4)
+                choice=random.randint(0,3)
                
                 
                 if choice==0:
                 	player.fold(pot)
+                
                 elif choice==1:
-                	player.check_call(pot)
-                elif choice==2:
                 	if player.stack<=player.to_play:
                 		player.check_call(pot)
                 	else:
                 		player.bet(pot, calc_bet(player))
-                elif choice==3:
+                elif choice==2:
                 	if player.stack<=player.to_play:
                 		player.check_call(pot)
                 	else:
