@@ -1,6 +1,6 @@
-'''Cards 2.8.1
+'''Cards 2.8.2
 
-fixed negative stakes and failure to record bust()
+created 'position' variable.  
 
 '''
 
@@ -50,7 +50,7 @@ class Card:
 
 class Hand:
 
-    
+    serial=0
 
     def __init__(self, name, table, strategy='Random'):
 
@@ -66,6 +66,9 @@ class Hand:
         self.total_cards=(self.cards+table.cards)
         table.players.append(self)
         self.name=name
+        
+        Hand.serial+=1
+        self.position=Hand.serial
         self.small_blind=False
         self.big_blind=False
         self.dealer=False
@@ -99,8 +102,13 @@ class Hand:
     def play_analysis(self):
 
         pass
-        
 
+    @property
+
+    def get_position(self):
+
+        return self.position%pot.table_size
+    
     def __str__(self):
 
 
@@ -132,6 +140,7 @@ class Hand:
     
         return hand_value, rep, tie_break
 
+   
     def print_cards(self):
 
         rep=''
@@ -237,6 +246,10 @@ class Hand:
     def bust(self):
 
         print (str(self.name)+' is bust')
+        list_index=table.players.index(self)
+        for p in table.players[list_index+1:]:
+            p.position-=1
+            
         table.players.remove(self)
         
         
@@ -371,6 +384,7 @@ class Pot(object):
         #already bet - works out if the round starts with 0 bet 
         self.already_bet=False
         self.raised=False
+        
 
     @property
 
@@ -381,6 +395,15 @@ class Pot(object):
         	return True
         else:
             return False
+
+    @property
+
+    def yet_to_play(self):
+
+        ytp=self.table_size-self.turn
+        if ytp<1: ytp=1
+
+        return ytp
 
     @property
 
@@ -470,10 +493,12 @@ def debug(pot):
         print (str(player.name)+' Stack='+str(player.stack)+' Stake='+str(player.stake)+' Player in pot='+str(player.in_pot)+'  Pot total='+str(pot.total)+'  all_in='+str(player.all_in)+'first all in'+str(player.first_all_in))
         print ('is folded'+str(player.is_folded))
         print ('flustra='+str(player.flustra))
+        print ('position='+str(player.position))
     
     
     for pot in pots:
             print (str(pot.name)+' total '+ str(pot.total))
+            print ('yet to play:'+str(pot.yet_to_play))
             print ('active players')
             for player in pot.active_players:
             	print (str(player.name))
