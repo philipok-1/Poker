@@ -1,4 +1,4 @@
-#poker player strategy and i/o
+##poker player strategy and i/o
 
 import random, pokerhands
 
@@ -46,6 +46,37 @@ class Strategy():
         def decide_play(self, player, pot):
                 
                 pass
+
+class Sklansky1(Strategy):
+
+        #sklansky all-in tournament strategy
+
+        def decide_play(self, player, pot):
+
+                total_blinds=(BLINDS[0]+BLINDS[1])
+                score=(player.stack-total_blinds)
+                score*=pot.yet_to_play
+                score*=(pot.limpers+1)
+
+##a=((range(0,100), (range(101,200))))
+##b={0:min value to go in
+##
+##for item in a:
+##	if b in item:
+##		print (a.index(item))
+
+##Key Number = 400 or more: Move in with AA and fold everything else.
+##Key Number = 200 to 400: Move in with AA and KK only.
+##Key Number = 150 to 200: Move in with AA, KK, QQ and AK
+##Key Number = 100 to 150: Move in with AA, KK, QQ, JJ, TT, AK, AQ and KQ
+##Key Number = 80 to 100: Move in with any pair, AK, AQ, KQ, any suited Ace and
+##any suited connector down to 5-4 suited.
+##Key Number = 60 to 80: Move in with any pair, any ace, KQ, any suited king
+##and all one-gap and no-gap suited connectors.
+##Key Number = 40 to 60: Move in with everything above + any king.
+##Key Number = 20 to 40: Move in with everything above + any 2 suited cards
+##Key Number = <20: Move in with any 2-cards.
+
 
 class Random(Strategy):
 
