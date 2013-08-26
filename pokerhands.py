@@ -28,7 +28,8 @@ def is_straight(values, length):
     for low in (10,9,8,7,6,5,4,3,2,1):
         needed = set(range(low, low+length))
         if len(needed - hand) <= 0:
-            return low+4
+            return low+length
+      
     return 0
 
         
@@ -102,9 +103,7 @@ def evaluate_hand(cards):
     
     #avoid having three pairs
     if len(pair_l)==3:
-        for card in winning_cards[5:]:
-            
-            tie_break.append(card)
+        tie_break.append(winning_cards[5:])
 
     #check for straight
 
@@ -113,10 +112,14 @@ def evaluate_hand(cards):
     # check for flush
     
     for key, value in suit_count.items():
-
-        if value==5:
-            flush=True
-            high_card=False
+    	
+    		flush_score=0
+    		
+    		if value==5:
+    			flush=True
+    			high_card=False
+    		else:
+    			flush_score=value
 
     #find values     
  
@@ -124,19 +127,21 @@ def evaluate_hand(cards):
     if len(pair_l)==1 and trip_l==[]:
         rep=('pair of '+cn(pair_l[0])+'s')
         hand_value=100+(sum(winning_cards[:2]))
+        tie_break=values[:3]
 
     elif len(pair_l)>1:
         rep=('two pair -'+cn(pair_l[0])+'s and '+cn(pair_l[1])+'s ')
         hand_value=200+(sum(winning_cards[:4]))
+        tie_break=values[:1]
     
     elif trip_l and pair_l==[]:
         rep=('trip '+cn(trip_l[0])+'s ')
         hand_value=300+(sum(winning_cards[:3]))
+        tie_break=values[:2]
 
     elif straight>0 and not flush:
         rep=('Straight, '+cn(straight)+' high')
         hand_value=400+straight
-        tie_break=0
 
     elif flush:
 
@@ -153,14 +158,16 @@ def evaluate_hand(cards):
     elif len(trip_l)==1 and len(pair_l)>=1:
         rep=('full house - '+cn(trip_l[0])+'s full of '+cn(pair_l[0])+'s')
         hand_value=600+(sum(winning_cards[:3]))
+        
 
     elif quad_l:
         rep=('four '+cn(quad_l[0])+' s')
         hand_value=700+(sum(winning_cards[:4]))
+        tie_break=values[:1]
 
     elif (straight in range (1,9)) and flush:
         rep=('Straight flush, '+cn(straight)+' high')
-        value=800+straight
+        hand_value=800+straight
 
   
    
@@ -171,10 +178,15 @@ def evaluate_hand(cards):
         
         rep=('high card '+cn(values[0]))
         hand_value=values[0]
-        tie_break=values[1:]
-                
-
-    return rep, hand_value, tie_break
+        tie_break=values[:4]
+    
+    limit=len(values)
+    if limit>5:
+    	 limit=5
+    
+    flustra=(flush_score, (is_straight(values,limit)))
+		
+    return rep, hand_value, tie_break, flustra
 
     
 

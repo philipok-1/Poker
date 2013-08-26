@@ -1,6 +1,6 @@
-'''Cards 2.8.0
+'''Cards 2.8.2
 
-fixed side pot freezing error
+created 'position' variable.  
 
 '''
 
@@ -50,7 +50,7 @@ class Card:
 
 class Hand:
 
-    
+    serial=0
 
     def __init__(self, name, table, strategy='Random'):
 
@@ -66,12 +66,16 @@ class Hand:
         self.total_cards=(self.cards+table.cards)
         table.players.append(self)
         self.name=name
+        
+        Hand.serial+=1
+        self.position=Hand.serial
         self.small_blind=False
         self.big_blind=False
         self.dealer=False
         self.hand_value=0
         self.rep=''
         self.tie_break=0
+        self.flustra=0
         self.is_folded=False
         self.stack=1000
         
@@ -98,8 +102,13 @@ class Hand:
     def play_analysis(self):
 
         pass
-        
 
+    @property
+
+    def get_position(self):
+
+        return self.position%pot.table_size
+    
     def __str__(self):
 
 
@@ -121,14 +130,17 @@ class Hand:
         
         self.total_cards=(self.cards+table.cards)
         
-        rep, hand_value, tie_break=pokerhands.evaluate_hand(self.total_cards)
+        rep, hand_value, tie_break, flustra=pokerhands.evaluate_hand(self.total_cards)
         
         self.rep=str(rep)
         self.hand_value=hand_value
         self.tie_break=tie_break
+        self.flustra=flustra
+        
     
         return hand_value, rep, tie_break
 
+   
     def print_cards(self):
 
         rep=''
@@ -188,17 +200,22 @@ class Hand:
         			self.stake=self.stack
         		else:
         			self.stake=self.to_play
-        print (str(self.name)+' calls '+str(self.to_play))
+        		print (str(self.name)+' calls '+str(self.to_play))
+        		if pot.stage==0 and pot.raised==False:
+        			pot.limpers+=1
 
         next_player(pot)
     
     
     def bet(self, pot, stake):
         
-        
+        print ('stake='+str(stake))
+        print ('self to play='+str(self.to_play))
         if pot.already_bet:
             print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
+            pot.limpers=0
+            pot.raised=True
         else:
             print (str(self.name)+' bets '+str(stake))
         
@@ -206,6 +223,8 @@ class Hand:
       
         self.stake=stake
         pots[-1].to_play+=(self.stake-self.to_play)
+        
+        print ('self.stake='+str(self.stake))
         
         
         next_player(pot, True)
@@ -227,6 +246,10 @@ class Hand:
     def bust(self):
 
         print (str(self.name)+' is bust')
+        list_index=table.players.index(self)
+        for p in table.players[list_index+1:]:
+            p.position-=1
+            
         table.players.remove(self)
         
         
@@ -344,6 +367,7 @@ class Pot(object):
         self.players=[]
         self.folded_players=[]
         self.active_players=[]
+        self.limpers=0
         self.name=name
                     
         self.total=0
@@ -359,6 +383,8 @@ class Pot(object):
         self.no_raise=0
         #already bet - works out if the round starts with 0 bet 
         self.already_bet=False
+        self.raised=False
+        
 
     @property
 
@@ -369,6 +395,15 @@ class Pot(object):
         	return True
         else:
             return False
+
+    @property
+
+    def yet_to_play(self):
+
+        ytp=self.table_size-self.turn
+        if ytp<1: ytp=1
+
+        return ytp
 
     @property
 
@@ -457,14 +492,19 @@ def debug(pot):
         
         print (str(player.name)+' Stack='+str(player.stack)+' Stake='+str(player.stake)+' Player in pot='+str(player.in_pot)+'  Pot total='+str(pot.total)+'  all_in='+str(player.all_in)+'first all in'+str(player.first_all_in))
         print ('is folded'+str(player.is_folded))
+        print ('flustra='+str(player.flustra))
+        print ('position='+str(player.position))
     
     
     for pot in pots:
             print (str(pot.name)+' total '+ str(pot.total))
-            for player in pot.players:
+            print ('yet to play:'+str(pot.yet_to_play))
+            print ('active players')
+            for player in pot.active_players:
             	print (str(player.name))
 
             print ('table size '+str(pot.table_size))
+            print ('limpers='+str(pot.limpers))
             print ('no raise '+str(pot.no_raise))
             print ('frozen='+str(pot.is_frozen))
             print ('one remaining='+str(pot.one_remaining))
@@ -573,6 +613,7 @@ def betting_round(pot, table):
             player.all_in=True
             player.first_all_in=True
             
+            
     
         
         
@@ -678,6 +719,7 @@ def betting_round(pot, table):
     pots[0].turn=0
     pots[0].stage+=1
     pots[0].already_bet=False
+    pots[0].limpers=0
     
     
  
@@ -811,12 +853,14 @@ while status=='play':
         for pot in pots:
         
             showdown(pot)
-
-    for player in table.players:
-
-        if player.stack<=BLINDS[1]:
             
-            player.bust()
+    for player in pot.players:
+    	
+    	print (str(player.name))
+    	
+    	if player.stack<=BLINDS[1]:
+    		
+    		player.bust()
 		
     if len(table.players)==1:
     	status='winner'
