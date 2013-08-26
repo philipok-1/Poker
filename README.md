@@ -3,7 +3,7 @@ Poker
 
 A Texas Hold'Em poker game in Python
 
-Poker.py is the game engine and deck/player generator
+Poker.py is the game engine and deck/player generator.  Handles side pots (this took me about a month to work out) just about..
 
 imported modules:
 
