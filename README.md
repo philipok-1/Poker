@@ -3,12 +3,17 @@ Poker
 
 A Texas Hold'Em poker game in Python
 
-Cards is the game engine and deck/player generator
+Poker.py is the game engine and deck/player generator
 
 imported modules:
 
-Pokerhands is a hand evaluator and scoring tool, takes a value (1-13) of individual cards in a player's hand and returns a score, including facility for tie-breaks/split pots
+Pokerhands.py is a hand evaluator and scoring tool, takes a value (1-13) of individual cards in a player's hand and returns a score, including facility for tie-breaks/split pots
 
-Pokerstrat is a module that allocates player strategies; currently has one AI that plays at random, and a Human (needs keyboard input)
+Pokerstrat.py is a module that allocates player strategies; currently has one AI that plays at random, a Human (needs keyboard input), and one other (see below)
 
-Currently going through a lot of debugging.  
+Working on implementing an algorithm for David Sklansky's tournament all-in/fold strategy
+
+Any suggestions on making my sprawling code sleeker welcome
+
+cheers
+philip
