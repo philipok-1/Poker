@@ -184,9 +184,10 @@ def evaluate_hand(cards):
     if limit>5:
     	 limit=5
     
-    flustra=(flush_score, (is_straight(values,limit)))
+    gappers=values[0]-values[1]
+    raw_data=(flush_score, (is_straight(values,limit)), sum(values), gappers)
 		
-    return rep, hand_value, tie_break, flustra
+    return rep, hand_value, tie_break, raw_data
 
     
 

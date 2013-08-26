@@ -54,16 +54,19 @@ class Sklansky1(Strategy):
         def decide_play(self, player, pot):
 
                 total_blinds=(BLINDS[0]+BLINDS[1])
-                score=(player.stack-total_blinds)
+                score=(player.stack/total_blinds)
                 score*=pot.yet_to_play
                 score*=(pot.limpers+1)
-
-##a=((range(0,100), (range(101,200))))
-##b={0:min value to go in
-##
-##for item in a:
-##	if b in item:
-##		print (a.index(item))
+                
+                player.get_value()
+                
+                key=((range(0,19)), (range(20,39)), (range(40,59)), (range(60,79)), (range(80,99)), (range(100,149)), (range(150,199)), (range(200, 399)), (range(400, 1000)))
+                
+                threshold={0:0, 1:0}
+                
+                for k in key:
+                	if score in k:
+                		minval=(threshold[key.index(k)])
 
 ##Key Number = 400 or more: Move in with AA and fold everything else.
 ##Key Number = 200 to 400: Move in with AA and KK only.
@@ -83,7 +86,8 @@ class Random(Strategy):
     
         def decide_play(self, player, pot):
 
-                player.get_value()
+                
+             
                 choice=random.randint(0,3)
                
                 
@@ -113,6 +117,7 @@ class Human(Strategy):
     def decide_play(self, player, pot):
         
         player.get_value()
+        
         options=Human.options
         choices=Human.choices
         action=''
@@ -174,3 +179,4 @@ class Human(Strategy):
 	
 	
 	
+
