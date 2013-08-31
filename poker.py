@@ -56,7 +56,7 @@ class Hand:
 
         
         self.strategy=[]
-        
+        self.stratname=strategy
         strategy_class=getattr(pokerstrat, strategy)
         strat=strategy_class(self)
         self.strategy.append(strat)
@@ -200,7 +200,7 @@ class Hand:
         			self.stake=self.stack
         		else:
         			self.stake=self.to_play
-        		print (str(self.name)+' calls '+str(self.to_play))
+        		print (str(self.name)+' calls '+str(self.stake))
         		if pot.stage==0 and pot.raised==False:
         			pot.limpers+=1
 
@@ -209,8 +209,6 @@ class Hand:
     
     def bet(self, pot, stake):
         
-        print ('stake='+str(stake))
-        print ('self to play='+str(self.to_play))
         if pot.already_bet:
             print (str(self.name)+' raises '+str(stake-self.to_play))
             self.raised+=1
@@ -224,7 +222,7 @@ class Hand:
         self.stake=stake
         pots[-1].to_play+=(self.stake-self.to_play)
         
-        print ('self.stake='+str(self.stake))
+        
         
         
         next_player(pot, True)
@@ -330,6 +328,7 @@ class Table(Hand):
         self.is_folded=False
         self.button=0
         self.hands=0
+        self.blinds_timer=0
         
     def print_cards(self):
 
@@ -341,7 +340,7 @@ class Table(Hand):
         else:
 
             for card in self.cards:
-
+                card.faceup=True
                 rep+=str(card)+' '
 
         print (rep)
@@ -369,6 +368,7 @@ class Pot(object):
         self.active_players=[]
         self.limpers=0
         self.name=name
+        self.blinds=BLINDS
                     
         self.total=0
         
@@ -400,7 +400,7 @@ class Pot(object):
 
     def yet_to_play(self):
 
-        ytp=self.table_size-self.turn
+        ytp=self.table_size-(self.turn+1)
         if ytp<1: ytp=1
 
         return ytp
@@ -551,7 +551,9 @@ def ante_up(pot):
                 
         player.ante(pot)
         print (player)
-        deck.deal_to(player, 2)
+        deck.deal_to(player, 2, False)
+        if player.stratname=='Human':
+            player.flip()
         player.print_cards()
         pot.already_bet=True
 
@@ -617,7 +619,7 @@ def betting_round(pot, table):
     
         
         
-        debug(pot)
+        #debug(pot)
         
         
     if pots[-1].one_remaining:
@@ -753,7 +755,10 @@ def showdown(pot):
         split_pot=[]
         print ('\n\n\n')
         for player in scoring:
-         
+
+                if player.stratname!='Human':
+                    player.flip()
+                player.print_cards()
                 print (player.name+' has '+str(player.rep))
                 
                 
@@ -790,15 +795,21 @@ def showdown(pot):
         ######################
 
 #set up the game and players
-   
-BLINDS=(10,20)                  
+
+status='setup'
+
+BLINDS=[10,20]
 
 table=Table()
 
-player1=Hand('Philip', table, 'Human')
-player2=Hand('Igor', table)
-player3=Hand('Carol', table)
-player4=Hand('Johnboy', table)
+player1=Hand('Philip', table, 'SklanskySys2')
+player2=Hand('Igor', table, 'SklanskySys2')
+player3=Hand('Carol', table, 'SklanskySys2')
+player4=Hand('Johnboy', table, 'SklanskySys2')
+player5=Hand('Rob', table, 'SklanskySys2')
+player6=Hand('Alex', table, 'SklanskySys2')
+player7=Hand('Wynona', table, 'SklanskySys2')
+player8=Hand('Timur', table, 'SklanskySys2')
 
 deck=Deck()
 
@@ -811,6 +822,9 @@ while status=='play':
     #increment the table hand#
 
     table.hands+=1
+    table.blinds_timer=table.hands%6
+    if table.blinds_timer==5:
+        BLINDS[:] = [x*2 for x in BLINDS] 
 
     #shuffle the deck
     
@@ -831,17 +845,18 @@ while status=='play':
     pot.set_blinds()
 
     print ('Hand#'+str(table.hands))
+    print ('Blinds: '+str(BLINDS))
     
     ante_up(pot)
 
-    debug(pot)
+    #debug(pot)
 
     while pot.stage<4:
             
-        deck.deal_to(table, Pot.deal_sequence[pot.stage])
+        deck.deal_to(table, Pot.deal_sequence[pot.stage], True)
 
         print (str(Pot.stage_dict[pot.stage]))
-          
+        
         table.print_cards()        	
              
         betting_round(pots[-1], table)
@@ -856,7 +871,7 @@ while status=='play':
             
     for player in pot.players:
     	
-    	print (str(player.name))
+    	
     	
     	if player.stack<=BLINDS[1]:
     		
