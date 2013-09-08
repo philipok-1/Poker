@@ -19,6 +19,7 @@ def cn(value):
 
 #straight detector
 
+
 def is_straight(values, length):
 
     hand = set(values)
@@ -28,7 +29,7 @@ def is_straight(values, length):
     for low in (10,9,8,7,6,5,4,3,2,1):
         needed = set(range(low, low+length))
         if len(needed - hand) <= 0:
-            return low+length
+            return (low+length)-1
       
     return 0
 
@@ -37,7 +38,9 @@ def evaluate_hand(cards):
 
     #split cards into values and suits
 
+    
     values=[]
+    raw_values=[]
     suits=[]
     flush=False
     high_card=True #False if anything but a high card remains
@@ -46,6 +49,12 @@ def evaluate_hand(cards):
 
         values.append(card.value)
         suits.append(card.suit)
+
+    #keep raw data on values
+
+    for v in values:
+        raw_values.append(v)
+    
 
     #perform histogram on values and suits
 
@@ -66,8 +75,12 @@ def evaluate_hand(cards):
     hand_value=0
     tie_break=0
     winning_cards=[]
-    
-    straight=is_straight(values, 5)
+
+    limit=len(values)
+    if limit>5:
+    	 limit=5
+        
+    straight=is_straight(values, limit)
     
     #iterate through values
     
@@ -126,7 +139,7 @@ def evaluate_hand(cards):
         
     if len(pair_l)==1 and trip_l==[]:
         rep=('pair of '+cn(pair_l[0])+'s')
-        hand_value=100+(sum(winning_cards[:2]))
+        hand_value=100+(sum(winning_cards[:2]))	
         tie_break=values[:3]
 
     elif len(pair_l)>1:
@@ -180,13 +193,12 @@ def evaluate_hand(cards):
         hand_value=values[0]
         tie_break=values[:4]
     
-    limit=len(values)
-    if limit>5:
-    	 limit=5
     
-    flustra=(flush_score, (is_straight(values,limit)))
+    
+    gappers=(raw_values[0])-(raw_values[1])
+    raw_data=(raw_values, flush_score, straight, gappers)
 		
-    return rep, hand_value, tie_break, flustra
+    return rep, hand_value, tie_break, raw_data
 
     
 
@@ -195,3 +207,4 @@ def evaluate_hand(cards):
         
 
         
+
