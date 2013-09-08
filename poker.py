@@ -3,7 +3,7 @@
 created 'position' variable.  
 
 '''
-
+__author__='philip'
 
 import random
 import pokerhands
@@ -345,7 +345,11 @@ class Table(Hand):
 
         print (rep)
 
-    
+    def print_players(self):
+    	
+    	for player in self.players:
+    		print (player)
+    		
     def clear(self):
 
       self.cards=[]
@@ -551,7 +555,7 @@ def ante_up(pot):
                 
         player.ante(pot)
         print (player)
-        deck.deal_to(player, 2, False)
+        deck.deal_to(player, 2)
         if player.stratname=='Human':
             player.flip()
         player.print_cards()
@@ -790,6 +794,11 @@ def showdown(pot):
                 
                 scoring[0].stack+=pot.total
                 print (str(scoring[0].name)+' wins '+str(pot.total))
+        
+        
+
+               
+        
 
 #_______________________________________________________________________gameplay
         ######################
@@ -821,10 +830,9 @@ while status=='play':
 
     #increment the table hand#
 
-    table.hands+=1
-    table.blinds_timer=table.hands%6
-    if table.blinds_timer==5:
-        BLINDS[:] = [x*2 for x in BLINDS] 
+     
+        
+    
 
     #shuffle the deck
     
@@ -834,6 +842,9 @@ while status=='play':
     #create pot for this hand
     pots=[]
     pot=Pot(table, 'main')
+    
+    
+    
     for player in table.players:
             pot.players.append(player)
             pot.active_players.append(player)
@@ -850,6 +861,7 @@ while status=='play':
     ante_up(pot)
 
     #debug(pot)
+    #table.print_players()
 
     while pot.stage<4:
             
@@ -860,6 +872,8 @@ while status=='play':
         table.print_cards()        	
              
         betting_round(pots[-1], table)
+        
+        #table.print_players()
        
 
     
@@ -869,16 +883,22 @@ while status=='play':
         
             showdown(pot)
             
-    for player in pot.players:
-    	
-    	
-    	
-    	if player.stack<=BLINDS[1]:
-    		
-    		player.bust()
-		
+         
+    
+    table.hands+=1
+    table.blinds_timer=table.hands%6
+    if table.blinds_timer==5:
+        BLINDS[:] = [x*2 for x in BLINDS]
+        
+    for player in table.players[:]:
+        	print (player.name, player.stack, BLINDS[1])
+        	if player.stack<=BLINDS[1]:
+        		
+        		player.bust()
+        		
     if len(table.players)==1:
     	status='winner'
+    
           
     print ('\n\n\n')
     
@@ -903,5 +923,6 @@ for player in table.players:
 
 
    
+
 
 

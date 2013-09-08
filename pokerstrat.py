@@ -74,8 +74,20 @@ class SklanskySys2(Strategy):
                 GAI=False
 
                 print ('score='+str(score))
+                print ('pot raised='+str(pot.raised))
                 
-                if score>400 and raw_values in (13,13):
+                if pot.raised:
+
+                        if raw_values in ((13,13), (12,12)):
+                                GAI=True
+
+                        elif raw_values in (13,12) and flush_value==2:
+                                GAI=True
+
+                        else:
+                                GAI=False
+                
+                elif score>400 and raw_values in (13,13):
                         GAI=True
                 elif score in range (200,399) and raw_values in ((13,13),(12,12)):
                         GAI=True
@@ -241,4 +253,5 @@ class Human(Strategy):
 	
 	
 	
+
 

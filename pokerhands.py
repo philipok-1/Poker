@@ -29,7 +29,7 @@ def is_straight(values, length):
     for low in (10,9,8,7,6,5,4,3,2,1):
         needed = set(range(low, low+length))
         if len(needed - hand) <= 0:
-            return low+length
+            return (low+length)-1
       
     return 0
 
@@ -139,7 +139,7 @@ def evaluate_hand(cards):
         
     if len(pair_l)==1 and trip_l==[]:
         rep=('pair of '+cn(pair_l[0])+'s')
-        hand_value=100+(sum(winning_cards[:2]))
+        hand_value=100+(sum(winning_cards[:2]))	
         tie_break=values[:3]
 
     elif len(pair_l)>1:
@@ -207,3 +207,4 @@ def evaluate_hand(cards):
         
 
         
+
