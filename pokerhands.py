@@ -10,6 +10,8 @@ from operator import attrgetter
 
 #conversion function for values>names
 
+print (__name__)
+
 def cn(value):
 
     

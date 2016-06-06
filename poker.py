@@ -12,7 +12,6 @@ import time
 import pokerstrat
 
 
-
 #card class
 
 class Card:
